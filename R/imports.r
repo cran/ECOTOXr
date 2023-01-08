@@ -8,9 +8,10 @@
   })
 }
 
-#' @importFrom RSQLite dbExecute dbConnect dbDisconnect dbWriteTable
 #' @importFrom dplyr collect left_join inner_join select sql tbl
+#' @importFrom lifecycle badge
 #' @importFrom rlang :=
+#' @importFrom RSQLite dbExecute dbConnect dbDisconnect dbWriteTable
 NULL
 
 #' Objects exported from other packages
@@ -18,7 +19,7 @@ NULL
 #' Objects imported and exported from other packages. See original documentation for more details.
 #' 
 #' \describe{
-#' \item{dplyr}{\code{\link[dplyr:reexports]{\%>\%}}}
+#' \item{dplyr}{[`\%>\%()`][dplyr::reexports]}
 #' }
 #' @importFrom dplyr %>%
 #' @export %>%
