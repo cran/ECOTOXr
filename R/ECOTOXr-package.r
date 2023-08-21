@@ -61,9 +61,6 @@
 #'   features implemented in this package are experimental.
 #' * The user is not limited by an internet connection and its bandwidth.
 #' * Not all database fields, and only a limited number of records, can be retrieved from the on-line interface.
-#' @docType package
-#' @name ECOTOXr
-#' @author Pepijn de Vries
 #' @references
 #' Official US EPA ECOTOX website:
 #' <https://cfpub.epa.gov/ecotox/>
@@ -71,4 +68,6 @@
 #' Olker, J.H., Elonen, C.M., Pilli, A., Anderson, A., Kinziger, B., Erickson, S., Skopinski, M., Pomplun, A., LaLone, C.A.,
 #' Russom, C.L. and Hoff, D. (2022), The ECOTOXicology Knowledgebase: A Curated Database of Ecologically Relevant Toxicity
 #' Tests to Support Environmental Research and Risk Assessment. _Environ Toxicol Chem_, 41: 1520-1539.
+#' @keywords internal
+"_PACKAGE"
 NULL
