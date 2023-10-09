@@ -1,8 +1,8 @@
 Package: ECOTOXr
 Type: Package
 Title: Download and Extract Data from US EPA's ECOTOX Database
-Version: 1.0.3
-Date: 2023-08-21
+Version: 1.0.5
+Date: 2023-10-09
 Authors@R: c(person("Pepijn", "de Vries", role = c("aut", "cre", "dtc"),
     email = "pepijn.devries@outlook.com",
     comment = c(ORCID = "0000-0002-7961-6646")))
@@ -27,6 +27,6 @@ Encoding: UTF-8
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-08-21 15:27:36 UTC; vries171
+Packaged: 2023-10-09 15:47:20 UTC; vries171
 Repository: CRAN
-Date/Publication: 2023-08-21 17:40:02 UTC
+Date/Publication: 2023-10-09 18:30:08 UTC
