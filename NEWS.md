@@ -1,3 +1,16 @@
+ECOTOXr v1.0.9 (Release date: 2024-01-07)
+-------------
+
+  * switched from the 'magrittr' pipe operator ('%>%')
+    to R's native pipe operator ('|>')
+  * switched from 'httr' to 'httr2' dependency
+  * Added functions to check the local build
+    and its version
+  * Fix in database build routine
+  * Fix in manual to pass CRAN checks
+  * Explicit mentioning of required versions
+    of dependencies
+
 ECOTOXr v1.0.5 (Release date: 2023-10-09)
 -------------
 
