@@ -1,4 +1,12 @@
-ECOTOXr v1.0.9 (Release date: 2024-01-07)
+ECOTOXr v1.1.1
+-------------
+
+  * Added `pkgdown` generated website
+  * Updated documentation
+  * Updated database specifications for
+    2024-09-12 release of ECOTOX
+
+ECOTOXr v1.0.9
 -------------
 
   * switched from the 'magrittr' pipe operator ('%>%')
@@ -11,7 +19,7 @@ ECOTOXr v1.0.9 (Release date: 2024-01-07)
   * Explicit mentioning of required versions
     of dependencies
 
-ECOTOXr v1.0.5 (Release date: 2023-10-09)
+ECOTOXr v1.0.5
 -------------
 
   * Added verify_ssl argument to on-line
@@ -20,12 +28,12 @@ ECOTOXr v1.0.5 (Release date: 2023-10-09)
     
   * Minor fix in CAS handlers
 
-ECOTOXr v1.0.3 (Release date: 2023-08-21)
+ECOTOXr v1.0.3
 -------------
 
   * Adjustments to pass latest CRAN checks
 
-ECOTOXr v1.0.2 (Release date: 2023-06-18)
+ECOTOXr v1.0.2
 -------------
 
   * Fixes for 2023 June release of the database:
@@ -44,7 +52,7 @@ ECOTOXr v1.0.2 (Release date: 2023-06-18)
     occurrence of unexpected fields while building.
     These are added to the build log file.
 
-ECOTOXr v1.0.1 (Release date: 2023-01-01)
+ECOTOXr v1.0.1
 -------------
 
   * Experimental features for on-line searching of
@@ -58,7 +66,7 @@ ECOTOXr v1.0.1 (Release date: 2023-01-01)
   * Some minor fixes in the SQLite building routine
     after the December 2022 release of ECOTOX
 
-ECOTOXr v0.2.0 (Release date: 2022-11-17)
+ECOTOXr v0.2.0
 -------------
 
   * Major changes:
@@ -74,7 +82,7 @@ ECOTOXr v0.2.0 (Release date: 2022-11-17)
     and manual. These include fixes to address notes
     from CRAN checks.
 
-ECOTOXr v0.1.1 (Release date: 2021-10-04)
+ECOTOXr v0.1.1
 -------------
 
   * Updates to DESCRIPTION file and manual in order to
@@ -83,7 +91,7 @@ ECOTOXr v0.1.1 (Release date: 2021-10-04)
   * Function progress reports are now shown with 'message'
     instead of 'cat', such that they can be suppressed.
 
-ECOTOXr v0.1.0 (Release date: 2021-10-03)
+ECOTOXr v0.1.0
 -------------
 
   * Initial release which can:

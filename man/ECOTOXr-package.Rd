@@ -96,6 +96,8 @@ Tests to Support Environmental Research and Risk Assessment. \emph{Environ Toxic
 Useful links:
 \itemize{
   \item \url{https://github.com/pepijn-devries/ECOTOXr}
+  \item \url{https://pepijn-devries.github.io/ECOTOXr/}
+  \item \doi{10.1016/j.chemosphere.2024.143078}
   \item Report bugs at \url{https://github.com/pepijn-devries/ECOTOXr/issues}
 }
 
