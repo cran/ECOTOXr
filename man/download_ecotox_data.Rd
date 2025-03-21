@@ -58,9 +58,24 @@ by setting \code{verify_ssl = FALSE}; but only do so when you trust the download
 \examples{
 \dontrun{
 ## This will download and build the database in your temp dir:
-download_ecotox_data(tempdir())
+if (interactive()) {
+  download_ecotox_data(tempdir())
 }
+}
+}
+\seealso{
+Other database-build-functions: 
+\code{\link{build_ecotox_sqlite}()},
+\code{\link{check_ecotox_build}()},
+\code{\link{check_ecotox_version}()},
+\code{\link{get_ecotox_url}()}
+
+Other online-functions: 
+\code{\link{get_ecotox_url}()},
+\code{\link{websearch_ecotox}()}
 }
 \author{
 Pepijn de Vries
 }
+\concept{database-build-functions}
+\concept{online-functions}

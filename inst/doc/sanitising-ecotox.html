@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Sanitising ECOTOX</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Sanitising ECOTOX</h1>
+
+
+
+<p>The ASCII files provided by the EPA contain all data required for
+building the local database (<code>download_ecotox_data()</code>). As
+documented by the EPA most table fields are stored as text (with a few
+exceptions). During the build process, all fields are kept as is,
+without any cleanup or standardisation. This is done to avoid any data
+loss or corruption and keep it as close to the source as possible.
+Therefore, it is likely that you need to post-process data after
+querying the locally built database.</p>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.40.1 (20161225.0304)
+ -->
+<!-- Title: ProTracker modules Pages: 1 -->
+<svg width="636pt" height="44pt" viewBox="0.00 0.00 636.00 26.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale (0.6 0.6) rotate(0) translate(4 40)">
+<title>ProTracker modules</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-40 632,-40 632,4 -4,4"></polygon>
+<!-- build -->
+<g id="node1" class="node">
+<title>build</title>
+<path fill="#ffffff" stroke="#000000" d="M118,-36C118,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 118,0 118,0 124,0 130,-6 130,-12 130,-12 130,-24 130,-24 130,-30 124,-36 118,-36"></path>
+<text text-anchor="middle" x="65" y="-22.2" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">build database</text>
+<text text-anchor="middle" x="65" y="-5.4" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">from EPA files</text>
+</g>
+<!-- query -->
+<g id="node2" class="node">
+<title>query</title>
+<path fill="#ffffff" stroke="#000000" d="M284,-36C284,-36 178,-36 178,-36 172,-36 166,-30 166,-24 166,-24 166,-12 166,-12 166,-6 172,0 178,0 178,0 284,0 284,0 290,0 296,-6 296,-12 296,-12 296,-24 296,-24 296,-30 290,-36 284,-36"></path>
+<text text-anchor="middle" x="231" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">query database</text>
+</g>
+<!-- build&#45;&gt;query -->
+<g id="edge1" class="edge">
+<title>build-&gt;query</title>
+<path fill="none" stroke="#000000" d="M130.1312,-18C130.1312,-18 155.7842,-18 155.7842,-18"></path>
+<polygon fill="#000000" stroke="#000000" points="155.7842,-21.5001 165.7842,-18 155.7842,-14.5001 155.7842,-21.5001"></polygon>
+</g>
+<!-- post -->
+<g id="node3" class="node">
+<title>post</title>
+<path fill="#ffffff" stroke="#000000" d="M450,-36C450,-36 344,-36 344,-36 338,-36 332,-30 332,-24 332,-24 332,-12 332,-12 332,-6 338,0 344,0 344,0 450,0 450,0 456,0 462,-6 462,-12 462,-12 462,-24 462,-24 462,-30 456,-36 450,-36"></path>
+<text text-anchor="middle" x="397" y="-22.2" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">post process/</text>
+<text text-anchor="middle" x="397" y="-5.4" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">cleanup</text>
+</g>
+<!-- query&#45;&gt;post -->
+<g id="edge2" class="edge">
+<title>query-&gt;post</title>
+<path fill="none" stroke="#000000" d="M296.1312,-18C296.1312,-18 321.7842,-18 321.7842,-18"></path>
+<polygon fill="#000000" stroke="#000000" points="321.7842,-21.5001 331.7842,-18 321.7842,-14.5001 321.7842,-21.5001"></polygon>
+</g>
+<!-- ana -->
+<g id="node4" class="node">
+<title>ana</title>
+<path fill="#ffffff" stroke="#000000" d="M616,-36C616,-36 510,-36 510,-36 504,-36 498,-30 498,-24 498,-24 498,-12 498,-12 498,-6 504,0 510,0 510,0 616,0 616,0 622,0 628,-6 628,-12 628,-12 628,-24 628,-24 628,-30 622,-36 616,-36"></path>
+<text text-anchor="middle" x="563" y="-13.8" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">further analyses</text>
+</g>
+<!-- post&#45;&gt;ana -->
+<g id="edge3" class="edge">
+<title>post-&gt;ana</title>
+<path fill="none" stroke="#000000" d="M462.1312,-18C462.1312,-18 487.7842,-18 487.7842,-18"></path>
+<polygon fill="#000000" stroke="#000000" points="487.7842,-21.5001 497.7842,-18 487.7842,-14.5001 487.7842,-21.5001"></polygon>
+</g>
+</g>
+</svg>
+
+<p>Although it is the user’s responsibility to evaluate the correctness
+and validity of the data, the <code>ECOTOXr</code> package provides some
+tools to make the cleanup process easier. This vignette presents
+important aspects for cleaning:</p>
+<ul>
+<li><a href="#sanitising-units">units</a></li>
+<li><a href="#sanitising-numerics">numeric data</a></li>
+<li><a href="#sanitising-dates">dates</a></li>
+</ul>
+<p>In general there are two types of sanitising functions; those named
+<code>as_..._ecotox()</code> and those starting with
+<code>process_ecotox_...s()</code>. Where ‘<code>...</code>’ is the data
+type being sanitised (e.g. <code>unit</code>, <code>numeric</code>, or
+<code>date</code>). The first function type (‘as’) handles vectors of
+<code>character</code>s. The second function type (‘process’), handles
+<code>data.frame</code>s, where relevant columns are automatically
+detected and processed with the ‘as’ type functions.</p>
+<p>Note that the sanitation routines are subject to development, so they
+may change. For reproducible results you should therefore always report
+the version of <code>ECOTOXr</code> you are using
+(<code>cite_ecotox()</code>).</p>
+<div id="sanitising-units" class="section level2">
+<h2>Sanitising units</h2>
+<p>Quantity units are vital for the interpretation of measurements. The
+ECOTOX database contains units as reported by its source publication. As
+a result, the units are often not stored consistently and are not
+standardised. The <code>ECOTOXr</code> package implements a function
+that sanitises the unit text fields and then parses them with the <a href="https://r-quantities.github.io/units/">units package</a>. This
+package provides instruments to convert units using the <a href="https://www.unidata.ucar.edu/software/udunits/">UNIDATA udunits
+library</a>.</p>
+<p>The advantage of using the <code>units</code> package is that it
+provides a mechanism to apply arithmetic manipulations of data and
+conversion between compatible units. Or as the documentation of the
+package puts it: “<em>When used in expression, it automatically converts
+units, and simplifies units of results when possible; in case of
+incompatible units, errors are raised</em>”</p>
+<p>So the goal of the sanitation steps here is to create a format that
+can be parsed by the <code>units</code> package. In order to achieve
+this the following steps are performed:</p>
+<ul>
+<li>Annotations are stripped (i.e., prefixes and suffixes to units,
+indicating for instance ‘active ingredient’, the medium it refers to
+(e.g. soil), etc.)</li>
+<li>Ambiguous units like percentages and ‘parts per …’ are converted to
+more explicit units where possible. This is only possible when it is
+recorded if the units indicate if they are w/w, w/v, v/v or v/w. If this
+conversion is not possible, the unit is kept as is.</li>
+<li>Units that are not known or interpreted incorrectly by the
+<code>units</code> package are converted such that they are handled
+correctly. For instance ‘C’ in the ECOTOX database frequently stands for
+‘degrees Celsius’ (although it is also used to indicate Carbon). So if
+it’s not an annotation, ‘C’ is replaced with ‘Celsius’. Another example
+is ‘sqft’ (square feet) which can not be interpreted by the units
+package is replaced with ‘ft2’.</li>
+<li>Units that are not reported or interpretable are set as generic
+‘unit’ (<code>units::mixed_units(1, &quot;unit&quot;)</code>).</li>
+</ul>
+<p>The documentation of the <code>as_unit_ecotox()</code> function has a
+more detailed description of the cleanup procedure. If you need even
+more details you can check the <a href="https://github.com/pepijn-devries/ECOTOXr/blob/main/R/process_unit.r">source
+code</a>.</p>
+<p>In order to demonstrate how unit sanitation works in this packages,
+let’s first initialise a vector of mishmash units. These are actually a
+random sample from the ECOTOX database, not necessarily the most common
+ones:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ECOTOXr) <span class="sc">|&gt;</span> <span class="fu">suppressMessages</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)   <span class="sc">|&gt;</span> <span class="fu">suppressMessages</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>mishmash <span class="ot">&lt;-</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;ppm-d&quot;</span>, <span class="st">&quot;ml/2.5 cm eu&quot;</span>, <span class="st">&quot;fl oz/10 gal/1k sqft&quot;</span>, <span class="st">&quot;kg/100 L&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="st">&quot;mopm&quot;</span>, <span class="st">&quot;ng/kg&quot;</span>, <span class="st">&quot;ug&quot;</span>, <span class="st">&quot;AI ng/g&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;pm&quot;</span>, <span class="st">&quot;uM/cm3&quot;</span>, <span class="st">&quot;1e-4 mM&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="st">&quot;degree&quot;</span>, <span class="st">&quot;fs&quot;</span>, <span class="st">&quot;mg/TI&quot;</span>, <span class="st">&quot;RR&quot;</span>, <span class="st">&quot;ug/g org/d&quot;</span>, <span class="st">&quot;1e+4 IU/TI&quot;</span>, <span class="st">&quot;pg/mg TE&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="st">&quot;pmol/mg&quot;</span>, <span class="st">&quot;1e-9/l&quot;</span>, <span class="st">&quot;no &gt;15 cm&quot;</span>, <span class="st">&quot;umol/mg pro&quot;</span>, <span class="st">&quot;cc/org/wk&quot;</span>, <span class="st">&quot;PIg/L&quot;</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="st">&quot;ug/100 ul/org&quot;</span>, <span class="st">&quot;ae mg/kg diet/d&quot;</span>, <span class="st">&quot;umol/mg/h&quot;</span>, <span class="st">&quot;cmol/kg d soil&quot;</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="st">&quot;ug/L diet&quot;</span>, <span class="st">&quot;kg/100 kg sd&quot;</span>, <span class="st">&quot;1e+6 cells&quot;</span>, <span class="st">&quot;ul diet&quot;</span>, <span class="st">&quot;S&quot;</span>, <span class="st">&quot;mmol/h/g TI&quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="st">&quot;g/70 d&quot;</span>, <span class="st">&quot;vg&quot;</span>, <span class="st">&quot;ng/200 mg diet&quot;</span>, <span class="st">&quot;uS/cm2&quot;</span>, <span class="st">&quot;AI ml/ha&quot;</span>, <span class="st">&quot;AI pt/acre&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="st">&quot;mg P/h/g TI&quot;</span>, <span class="st">&quot;no/m&quot;</span>, <span class="st">&quot;kg/ton sd&quot;</span>, <span class="st">&quot;ug/g wet wt&quot;</span>, <span class="st">&quot;AI mg/2 L diet&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="st">&quot;nmol/TI&quot;</span>, <span class="st">&quot;umol/g wet wt&quot;</span>, <span class="st">&quot;PSU&quot;</span>, <span class="st">&quot;Wijs number&quot;</span>)</span></code></pre></div>
+<p>With <code>as_unit_ecotox()</code>, the mishmash of units,
+represented by <code>character</code> strings are cleaned and coerced to
+<code>units::mixed_units()</code>. As <code>units</code> objects have a
+numeric component, but the <code>character</code> strings from the
+database do not, each unit is given a value of <code>1</code>. As you
+can see not all units in the <code>mishmash</code> vector can be
+interpreted and are just returned as arbitrary <code>1 unit</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">as_unit_ecotox</span>(mishmash, <span class="at">warn =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; Mixed units: d*ppm (1), ml/2.5cm (1), oz/1000ft2/10gal (1), kg/100L (1), month (1), ng/kg (1), ug (1), ng/g (1), unit (13), umol/L/cm3 (1), 0.0001mmol/L (1), ° (1), ug/d/g (1), pg/mg (1), pmol/mg (1), umol/mg (1), counts/counts/week (1), ug/100ul/counts (1), mg/d/kg (1), umol/h/mg (1), cmol/kg (1), ug/L (1), kg/100kg (1), 1000000counts (1), ul (1), S (1), mmol/g/h (1), g/70d (1), ng/200mg (1), uS/cm2 (1), ml/ha (1), pt/acre (1), mg/g/h (1), counts/m (1), kg/ton (1), ug/g (1), mg/2L (1), umol/g (1) </span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; 1 [d*ppm], 1 [ml/2.5cm], 1 [oz/1000ft2/10gal], 1 [kg/100L], 1 [month], 1 [ng/kg], 1 [ug], 1 [ng/g], 1 [unit], 1 [unit], 1 [umol/L/cm3], 1 [0.0001mmol/L], 1 [°], 1 [unit], 1 [unit], 1 [unit], 1 [ug/d/g], 1 [unit], 1 [pg/mg], 1 [pmol/mg], 1 [unit], 1 [unit], 1 [umol/mg], 1 [counts/counts/week], 1 [unit], 1 [ug/100ul/counts], 1 [mg/d/kg], 1 [umol/h/mg], 1 [cmol/kg], 1 [ug/L], 1 [kg/100kg], 1 [1000000counts], 1 [ul], 1 [S], 1 [mmol/g/h], 1 [g/70d], 1 [unit], 1 [ng/200mg], 1 [uS/cm2], 1 [ml/ha], 1 [pt/acre], 1 [mg/g/h], 1 [counts/m], 1 [kg/ton], 1 [ug/g], 1 [mg/2L], 1 [unit], 1 [umol/g], 1 [unit], 1 [unit]</span></span></code></pre></div>
+<p>With <code>process_ecotox_units()</code> you can process an entire
+<code>data.frame</code>/<code>tibble</code>, where each column ending
+with <code>_unit</code> is processed (i.e. <code>as_unit_ecotox()</code>
+is called on them). By setting the <code>.names</code> argument, you can
+preserve the original unit column:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">mishmash_unit =</span> mishmash) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">process_ecotox_units</span>(<span class="at">.names =</span> <span class="st">&quot;{.col}_parsed&quot;</span>, <span class="at">warn =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 50 × 2</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;    mishmash_unit        mishmash_unit_parsed</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                       &lt;mixed_units&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  1 ppm-d                           1 [d*ppm]</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;  2 ml/2.5 cm eu                 1 [ml/2.5cm]</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;  3 fl oz/10 gal/1k sqft 1 [oz/1000ft2/10gal]</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;  4 kg/100 L                      1 [kg/100L]</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;  5 mopm                            1 [month]</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;  6 ng/kg                           1 [ng/kg]</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;  7 ug                                 1 [ug]</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;  8 AI ng/g                          1 [ng/g]</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;  9 PH                               1 [unit]</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 10 pm                               1 [unit]</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 40 more rows</span></span></code></pre></div>
+<div id="consequences-of-unit-sanitation" class="section level3">
+<h3>Consequences of unit sanitation</h3>
+<p>As the database contains over 6,000 unique unit codes, it is likely
+that not all units are processable. Also, because the codes are not
+always consistent, some of them may not be interpreted correctly. Most
+frequently occurring units should parse correctly. If you think a
+specific code is not parsed correctly, and it is not highly outlandish,
+you could <a href="https://github.com/pepijn-devries/ECOTOXr/issues">file an issue
+report</a>. Furthermore, you should always inspect automatically parsed
+units for correctness.</p>
+<p>Another point of attention is the removal of annotations from the
+unit. Consider the concentration unit with the following
+annotations:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">as_unit_ecotox</span>(<span class="fu">c</span>(<span class="st">&quot;mg/L CO3&quot;</span>, <span class="st">&quot;mg/L CaCO3&quot;</span>, <span class="st">&quot;mg/L HCO3&quot;</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; Mixed units: mg/L (3) </span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; 1 [mg/L], 1 [mg/L], 1 [mg/L]</span></span></code></pre></div>
+<p>Note that they are all interpreted as <code>[mg/L]</code>. Although
+technically the same unit, they are definitely not directly compatible.
+The <code>units</code> package does not support annotations, so you need
+to keep track of them yourself.</p>
+</div>
+</div>
+<div id="sanitising-numerics" class="section level2">
+<h2>Sanitising numerics</h2>
+<p>First let me explain what is meant by ‘numerics’ in the ECOTOX
+database. These are all records that have a accompanying measurement
+unit in the database. This includes, concentrations, durations and many
+others. These records are stored as text fields in the database. So in
+order to interpret them as actual numerics in R, they need to be coerced
+to numerics. You could use a simple call to <code>as.numeric()</code> to
+do this, but that will not always work.</p>
+<p>The text fields may contain operators such as ‘&lt;’, ‘&gt;’, ‘~’,
+etc. I think this is a mistake and not by design, because many of the
+numeric fields have a corresponding operator field where this operator
+could be stored. Text fields can also contain labelling text (such as
+asterisk symbol) or inconsistent decimal or thousand separators.</p>
+<p>This is why there is <code>as_numeric_ecotox()</code> which first
+cleans the text records before coercing them to numerics:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Text fields as possibly encountered in the database</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>text_records <span class="ot">&lt;-</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;10&quot;</span>, <span class="st">&quot; 2&quot;</span>, <span class="st">&quot;3 &quot;</span>, <span class="st">&quot;~5&quot;</span>, <span class="st">&quot;9.2*&quot;</span>, <span class="st">&quot;2,33&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="st">&quot;2,333&quot;</span>, <span class="st">&quot;2.1(1.0 - 3.2)&quot;</span>, <span class="st">&quot;1-5&quot;</span>, <span class="st">&quot;1e-3&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  </span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">as_numeric_ecotox</span>(text_records)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Warning in as_numeric_ecotox(text_records): NAs introduced by coercion</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;  [1]   10.000    2.000    3.000    5.000    9.200    2.330 2333.000    2.100</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;  [9]       NA    0.001</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;has_notation&quot;)</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;  [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;has_brackets&quot;)</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE</span></span></code></pre></div>
+<p>You can use <code>process_ecotox_numerics()</code> to process a
+<code>data.frame</code>/<code>tibble</code> resulting from a search
+query. It automatically applies <code>as_numeric_ecotox()</code> to
+columns containing numeric information:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>text_tbl <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">conc1_mean =</span> text_records)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">process_ecotox_numerics</span>(text_tbl, <span class="at">warn =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 1</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;    conc1_mean</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;         &lt;dbl&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;  1     10    </span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;  2      2    </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;  3      3    </span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  4      5    </span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;  5      9.2  </span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;  6      2.33 </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;  7   2333    </span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;  8      2.1  </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;  9     NA    </span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; 10      0.001</span></span></code></pre></div>
+<div id="consequences-of-numeric-sanitation" class="section level3">
+<h3>Consequences of numeric sanitation</h3>
+<p>As indicated above all notations and operators included with numerics
+are stripped in the cleaning process. These notations and operators are
+potentially important for the interpretation of the values. It may be
+wise to keep track of them. One way to do this is by first trying to
+coerce texts to numerics with <code>as.numeric()</code> and then with
+<code>as_numeric_ecotox()</code>. The cases where the first returns
+<code>NA</code> but the latter returns a value, is likely to contain
+notations or operators (or is just inconsistently formatted). You could
+also use the <code>.names</code> argument in
+<code>process_ecotox_numerics()</code> to rename the numeric columns and
+keep the original text fields.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">process_ecotox_numerics</span>(text_tbl, <span class="at">warn =</span> <span class="cn">FALSE</span>, <span class="at">.names =</span> <span class="st">&quot;{.col}_num&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">test =</span> <span class="fu">is.na</span>(<span class="fu">as.numeric</span>(conc1_mean)) <span class="sc">&amp;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">as_numeric_ecotox</span>(conc1_mean, <span class="at">warn =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    )</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; Warning: There was 1 warning in `mutate()`.</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; ℹ In argument: `test = &amp;...`.</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Caused by warning:</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; ! NAs introduced by coercion</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 3</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;    conc1_mean       conc1_mean_num test </span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                     &lt;dbl&gt; &lt;lgl&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;  1 &quot;10&quot;                     10     FALSE</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;  2 &quot; 2&quot;                      2     FALSE</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt;  3 &quot;3 &quot;                      3     FALSE</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;  4 &quot;~5&quot;                      5     TRUE </span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt;  5 &quot;9.2*&quot;                    9.2   TRUE </span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;  6 &quot;2,33&quot;                    2.33  TRUE </span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;  7 &quot;2,333&quot;                2333     TRUE </span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt;  8 &quot;2.1(1.0 - 3.2)&quot;          2.1   TRUE </span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt;  9 &quot;1-5&quot;                    NA     FALSE</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; 10 &quot;1e-3&quot;                    0.001 FALSE</span></span></code></pre></div>
+</div>
+</div>
+<div id="combining-numerics-with-units" class="section level2">
+<h2>Combining numerics with units</h2>
+<p>The steps above show how to sanitise numerics and units separately.
+In order to standardise numeric values to a specific unit, these steps
+need to be combined. This can be achieved by calling
+<code>process_ecotox_numerics()</code> with <code>add_units</code> set
+to <code>TRUE</code>. This will add the corresponding units to the
+numeric value. But they are still mixed units. By calling
+<code>mixed_to_single_unit()</code> you can convert the values to a
+specific unit.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">conc1_mean =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;5e-4&quot;</span>, <span class="st">&quot;0.2&quot;</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">conc1_unit =</span> <span class="fu">c</span>(<span class="st">&quot;mg/L&quot;</span>, <span class="st">&quot;M&quot;</span>, <span class="st">&quot;% w/v&quot;</span>, <span class="st">&quot;ppt w/v&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="fu">process_ecotox_numerics</span>(<span class="at">add_units =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="at">conc1_mean_standard =</span> <span class="fu">mixed_to_single_unit</span>(conc1_mean, <span class="st">&quot;ug/L&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  )</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 3</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;      conc1_mean conc1_unit conc1_mean_standard</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;   &lt;mixed_units&gt; &lt;chr&gt;                   [ug/L]</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 1      1 [mg/L] mg/L                      1000</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 2     2 [mol/L] M                           NA</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 3  5e-04 [hg/L] % w/v                    50000</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 4     0.2 [g/L] ppt w/v                 200000</span></span></code></pre></div>
+<p>Note that in the example above not all units can be converted to the
+target unit <code>&quot;ug/L&quot;</code>. This is because concentrations in
+‘mol/L’ requires the molar mass of the solute in order to convert. It is
+returned as <code>NA</code>.</p>
+</div>
+<div id="sanitising-dates" class="section level2">
+<h2>Sanitising dates</h2>
+<p>The ECOTOX contains several date fields. They can represent
+meta-information about the record (date created and modified),
+administrative information (publication date), or experimental
+information (application date). These dates are stored as text in the
+database. As not all records are consistent or complete, some cleaning
+is required before coercing the text to a Date object
+(<code>?Date</code>).</p>
+<p>The example below shows some typical date formats as encountered in
+the database and how to coerce them to <code>Date</code> objects using
+<code>as_date_ecotox()</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>char_date <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;5-19-1987   &quot;</span>, <span class="st">&quot;5/dd/2021&quot;</span>, <span class="st">&quot;3/19/yyyy&quot;</span>, <span class="st">&quot;1985&quot;</span>, <span class="st">&quot;mm/19/1999&quot;</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>               <span class="st">&quot;October 2004&quot;</span>, <span class="st">&quot;nr/nr/2015&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">as_date_ecotox</span>(char_date)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;1987-05-19&quot; &quot;2021-05-01&quot; NA           &quot;1985-01-01&quot; &quot;1999-01-19&quot;</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; [6] &quot;2004-10-01&quot; &quot;2015-01-01&quot;</span></span></code></pre></div>
+<p>The only date that cannot be coerced is the one with an unspecified
+year. It is returned as <code>NA</code>.</p>
+<p>You can use <code>process_ecotox_dates()</code> to process a
+<code>data.frame</code>/<code>tibble</code> as returned by a search
+query. Date columns are automatically coerced with
+<code>as_date_ecotox()</code>. Column names ending with
+<code>_date</code> are recognised as date records.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">my_date =</span> char_date</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">process_ecotox_dates</span>()</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 1</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;   my_date   </span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;   &lt;date&gt;    </span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 1 1987-05-19</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; 2 2021-05-01</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; 3 NA        </span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; 4 1985-01-01</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; 5 1999-01-19</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; 6 2004-10-01</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; 7 2015-01-01</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

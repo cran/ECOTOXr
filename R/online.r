@@ -1,17 +1,17 @@
-#' Search and retrieve toxicity records from the on-line database
+#' Search and retrieve toxicity records from the online database
 #'
-#' `r lifecycle::badge('experimental')` Functions to search and retrieve records from the on-line database at
+#' `r lifecycle::badge('experimental')` Functions to search and retrieve records from the online database at
 #' <https://cfpub.epa.gov/ecotox/search.cfm>.
 #'
-#' The functions described here to search and retrieve records from the on-line database are experimental. This is because this feature is
-#' not formally supported by the EPA, and it may break in future iterations of the on-line database. The functions form an interface between
+#' The functions described here to search and retrieve records from the online database are experimental. This is because this feature is
+#' not formally supported by the EPA, and it may break in future iterations of the online database. The functions form an interface between
 #' R and the ECOTOX website and is therefore limited by its restrictions as described in the package documentation: [ECOTOXr::ECOTOXr]. The
 #' functions should therefore be used with caution.
 #' 
 #' @note **IMPORTANT:** when you plan to perform multiple adjacent searches (for instance in a loop), please insert a call to [Sys.sleep()].
 #' This to avoid overloading the server and getting your IP address banned from the server.
 #'
-#' @param fields A named `list` of `character`s, used to build a search for for the on-line search query of
+#' @param fields A named `list` of `character`s, used to build a search for for the online search query of
 #' <https://cfpub.epa.gov/ecotox/search.cfm>.
 #' Use [list_ecotox_web_fields()] to construct a valid list.
 #' @param habitat Use `aquire` (default) to retrieve aquatic data, `terrestrial` for, you've guessed it, terrestrial data.
@@ -27,17 +27,17 @@
 #' @rdname websearch
 #' @name websearch_ecotox
 #' @examples
-#' \dontrun{
-#' search_fields <-
-#'   list_ecotox_web_fields(
-#'     txAdvancedSpecEntries     = "daphnia magna",
-#'     RBSPECSEARCHTYPE          = "EXACT",
-#'     txAdvancedChemicalEntries = "benzene",
-#'     RBCHEMSEARCHTYPE          = "EXACT")
-#' search_results <- websearch_ecotox(search_fields)
+#' if (interactive()) {
+#'   search_fields <-
+#'     list_ecotox_web_fields(
+#'       txAdvancedSpecEntries     = "daphnia magna",
+#'       RBSPECSEARCHTYPE          = "EXACT",
+#'       txAdvancedChemicalEntries = "benzene",
+#'       RBCHEMSEARCHTYPE          = "EXACT")
+#'   search_results <- websearch_ecotox(search_fields)
 #' }
 #' @author Pepijn de Vries
-#' @family online-search-functions
+#' @family online-functions
 #' @family search-functions
 #' @export
 websearch_ecotox <- function(
@@ -47,6 +47,7 @@ websearch_ecotox <- function(
   if (is.null(verify_ssl)) verify_ssl <- TRUE
   cfg = list(...)
   if (!verify_ssl) {
+    Sys.setenv(OPENSSL_CONF = system.file("openssl.cnf", package = "ECOTOXr"))
     cfg[["ssl_verifyhost"]] <- 0
     cfg[["ssl_verifypeer"]] <- 0
   }
@@ -82,9 +83,9 @@ websearch_ecotox <- function(
   if (!grepl("spreadsheet", httr_result$headers$`content-type`)) {
     warn_text <- httr_result |> httr2::resp_body_html() |> rvest::html_text2() |>
       stringr::str_replace("Warning", "") |> trimws()
-    warn_text <- paste(warn_text, "Returning on-line preview data only")
+    warn_text <- paste(warn_text, "Returning online preview data only")
     warning(warn_text)
-    return(list(`On-line preview` = table_preview))
+    return(list(`online preview` = table_preview))
   }
   
   ## otherwise return full data
@@ -100,7 +101,7 @@ websearch_ecotox <- function(
         names = sheet_names
       )
     )
-  data_tables[["On-line preview"]] <- table_preview
+  data_tables[["online preview"]] <- table_preview
   unlink(tab_file)
   
   return(data_tables)
@@ -129,12 +130,12 @@ list_ecotox_web_fields <- function(...) {
 #' `r lifecycle::badge('experimental')` Search <https://comptox.epa.gov/dashboard> for substances and their chemico-physical properties
 #' and meta-information.
 #'
-#' The [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard) is a freely accessible on-line U.S. EPA database.
+#' The [CompTox Chemicals Dashboard](https://comptox.epa.gov/dashboard) is a freely accessible online U.S. EPA database.
 #' It contains information on physico-chemical properties, environmental fate and transport, exposure, usage, *in vivo* toxicity,
 #' and *in vitro* bioassay of a wide range of substances.
 #' 
-#' The function described here to search and retrieve records from the on-line database is experimental. This is because this feature is
-#' not formally supported by the EPA, and it may break in future incarnations of the on-line database. The function forms an interface between
+#' The function described here to search and retrieve records from the online database is experimental. This is because this feature is
+#' not formally supported by the EPA, and it may break in future incarnations of the online database. The function forms an interface between
 #' R and the [CompTox](https://comptox.epa.gov/dashboard) website and is therefore limited by the restrictions documented there.
 #' @param searchItems A `vector` of `character`s where each element is a substance descriptor (any of the selected `identifierType`s) you
 #' wish to query.
@@ -151,17 +152,15 @@ list_ecotox_web_fields <- function(...) {
 #' @rdname websearch_comptox
 #' @name websearch_comptox
 #' @examples
-#' \dontrun{
-#' ## search for substance name 'benzene' and CAS registration number 108-88-3
-#' ## on https://comptox.epa.gov/dashboard:
-#' comptox_results <- websearch_comptox(c("benzene", "108-88-3"))
+#' if (interactive()){
+#'   ## search for substance name 'benzene' and CAS registration number 108-88-3
+#'   ## on https://comptox.epa.gov/dashboard:
+#'   comptox_results <- websearch_comptox(c("benzene", "108-88-3"))
 #' 
-#' ## search for substances with monoisotopic mass of 100+/-5:
-#' comptox_results2 <- websearch_comptox("100", inputType = "MASS", massError = 5)
+#'   ## search for substances with monoisotopic mass of 100+/-5:
+#'   comptox_results2 <- websearch_comptox("100", inputType = "MASS", massError = 5)
 #' }
 #' @author Pepijn de Vries
-#' @family onlinesearch-functions
-#' @family search-functions
 #' @references
 #' Official US EPA CompTox website:
 #' <https://comptox.epa.gov/dashboard/>
@@ -202,6 +201,7 @@ websearch_comptox <- function(
   if (is.null(verify_ssl)) verify_ssl <- TRUE
   cfg <- list(...)
   if (!verify_ssl) {
+    Sys.setenv(OPENSSL_CONF = system.file("openssl.cnf", package = "ECOTOXr"))
     cfg[["ssl_verifyhost"]] <- 0
     cfg[["ssl_verifypeer"]] <- 0
   }

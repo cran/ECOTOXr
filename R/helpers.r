@@ -45,7 +45,9 @@
     dplyr::group_by(table) |>
     dplyr::group_map(~{
       dplyr::tibble(
-        tbl   = list(tbl(dbcon, .x$table[[1]]) |> dplyr::filter(!!sql(paste(sprintf("(%s)", .x$where), collapse = " AND ")))),
+        tbl   = list(
+          tbl(dbcon, .x$table[[1]]) |>
+            dplyr::filter(!!sql(paste(sprintf("(%s)", .x$where), collapse = " AND ")))),
         table = .x$table[[1]]
       )}, .keep = T) |>
     dplyr::bind_rows() |>
@@ -155,7 +157,7 @@
             output_fields$new_field[get_idx("code")] <<- paste0(prefix, fld)
           }
           
-          descr <- paste0(fld, "_description_")
+          descr <- paste0(fld, "_description")
           if (any(gsub(prefix, "", output_fields$new_field[get_idx("description")]) !=
                   output_fields$field[get_idx("description")])) {
             output_fields <<- dplyr::bind_rows(
@@ -344,7 +346,6 @@
             }, dplyr::any_of(c("cas_number", "chemical_name", "ecotox_group"))),
         "test_cas")
   }
-  
   if ("references" %in% output_fields$table) {
     result <- result |>
       left_join(

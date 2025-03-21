@@ -42,17 +42,18 @@ get_ecotox_sqlite_file <- function(path = get_ecotox_path(), version) {
 #' @rdname dbConnectEcotox
 #' @name dbConnectEcotox
 #' @examples
-#' \dontrun{
 #' ## This will only work when a copy of the database exists:
-#' con <- dbConnectEcotox()
+#' if (check_ecotox_availability()) {
+#'   con <- dbConnectEcotox()
 #'
-#' ## check if the connection works by listing the tables in the database:
-#' dbListTables(con)
+#'   ## check if the connection works by listing the tables in the database:
+#'   dbListTables(con)
 #'
-#' ## Let's be a good boy/girl and close the connection to the database when we're done:
-#' dbDisconnectEcotox(con)
+#'   ## Let's be a good boy/girl and close the connection to the database when we're done:
+#'   dbDisconnectEcotox(con)
 #' }
 #' @author Pepijn de Vries
+#' @family database-access-functions
 #' @export
 dbConnectEcotox <- function(path = get_ecotox_path(), version, ...) {
   f <- get_ecotox_sqlite_file(path, version)
@@ -76,8 +77,8 @@ dbDisconnectEcotox <- function(conn, ...) {
 #' function to obtain a citation to that specific download.
 #'
 #' In order for others to reproduce your results, it is key to cite the data source as accurately as possible.
-#' @param path A `character` string with the path to the location of the local database \(default is
-#' [get_ecotox_path()]\).
+#' @param path A `character` string with the path to the location of the local database (default is
+#' [get_ecotox_path()]).
 #' @param version A `character` string referring to the release version of the database you wish to locate.
 #' It should have the same format as the date in the EPA download link, which is month, day, year, separated by
 #' underscores ("%m_%d_%Y"). When missing, the most recent available copy is selected automatically.
@@ -86,18 +87,27 @@ dbDisconnectEcotox <- function(conn, ...) {
 #' @rdname cite_ecotox
 #' @name cite_ecotox
 #' @examples
-#' \dontrun{
 #' ## In order to cite downloaded database and this package:
-#' cite_ecotox()
-#' }
+#' cite_ecotox() |> suppressWarnings()
 #' @author Pepijn de Vries
+#' @family database-access-functions
 #' @export
 cite_ecotox <- function(path = get_ecotox_path(), version) {
-  db  <- get_ecotox_sqlite_file(path, version)
+  db  <- tryCatch({ get_ecotox_sqlite_file(path, version) }, error = \(x) "")
   bib <- gsub(".sqlite", "_cit.txt", db, fixed = T)
-  if (!file.exists(bib)) stop("No bibentry reference to database download found!")
-  result <- utils::readCitationFile(bib)
-  return(c(result, utils::citation("ECOTOXr")))
+  if (file.exists(bib)) {
+    downloaded_data <- utils::readCitationFile(bib)
+  } else {
+    downloaded_data <- NULL
+    warning("No bibentry reference to database download found!")
+  }
+  chemosphere <- utils::citation("ECOTOXr")
+  atts <- attributes(chemosphere)
+  chemosphere <- unclass(chemosphere)
+  meta <- utils::packageDescription(pkg = "ECOTOXr")
+  chemosphere[[1]]$note <- sprintf("R package version %s", meta$Version)
+  attributes(chemosphere) <- atts
+  return(c(downloaded_data, chemosphere))
 }
 
 #' Get information on the local ECOTOX database when available
@@ -116,11 +126,12 @@ cite_ecotox <- function(path = get_ecotox_path(), version) {
 #' @rdname get_ecotox_info
 #' @name get_ecotox_info
 #' @examples
-#' \dontrun{
-#' ## Show info on the current database (only works when one is downloaded and build):
-#' get_ecotox_info()
+#' if (check_ecotox_availability()) {
+#'   ## Show info on the current database (only works when one is downloaded and build):
+#'   get_ecotox_info()
 #' }
 #' @author Pepijn de Vries
+#' @family database-access-functions
 #' @export
 get_ecotox_info <- function(path = get_ecotox_path(), version) {
   default <- "No information available\n"
@@ -170,6 +181,7 @@ get_ecotox_info <- function(path = get_ecotox_path(), version) {
 #' ## 'dose_stat_method_codes' that are available from the ECOTOX database:
 #' list_ecotox_fields("full")
 #' @author Pepijn de Vries
+#' @family database-access-functions
 #' @export
 list_ecotox_fields <- function(which = c("default", "extended", "full", "all"), include_table = TRUE) {
   which <- match.arg(which)
@@ -205,10 +217,12 @@ list_ecotox_fields <- function(which = c("default", "extended", "full", "all"), 
 #' @rdname check_ecotox_build
 #' @name check_ecotox_build
 #' @examples
-#' \dontrun{
-#' check_ecotox_build()
+#' if (check_ecotox_availability()) {
+#'   check_ecotox_build()
 #' }
 #' @author Pepijn de Vries
+#' @family database-access-functions
+#' @family database-build-functions
 #' @export
 check_ecotox_build <- function(path = get_ecotox_path(), version, ...) {
   validity <- TRUE
@@ -220,6 +234,9 @@ check_ecotox_build <- function(path = get_ecotox_path(), version, ...) {
     attr(validity, "reasons") <-
       c(attr(validity, "reasons"), "Cannot connect with 'target' and 'version'.")
   } else {
+    on.exit({
+      dbDisconnect(con)
+    })
     tables <- RSQLite::dbListTables(con)
     missing_tables <- .db_specs$table[!.db_specs$table %in% tables]
     if (length(missing_tables) > 0) {
@@ -240,46 +257,50 @@ check_ecotox_build <- function(path = get_ecotox_path(), version, ...) {
         }
       }
     }
-    dbDisconnect(con)
   }
   return (validity)
 }
 
 #' Check if the locally build database is up to date
 #'
-#' `r lifecycle::badge('stable')` Checks the version of the database available on-line
+#' `r lifecycle::badge('stable')` Checks the version of the database available online
 #' from the EPA against the specified version (latest by default) of the database build
 #' locally. Returns `TRUE` when they are the same.
 #'
 #' @inheritParams get_ecotox_sqlite_file
 #' @param verbose A `logical` value. If true messages are shown on the console reporting
 #' on the check.
+#' @param ... Arguments passed to `get_ecotox_url()`
 #' @returns Returns a `logical` value invisibly indicating whether the locally build
 #' is up to date with the latest release by the EPA.
 #' @rdname check_ecotox_version
 #' @name check_ecotox_version
 #' @examples
-#' \dontrun{
-#' check_ecotox_version()
+#' if (check_ecotox_availability()) {
+#'   check_ecotox_version()
 #' }
 #' @author Pepijn de Vries
+#' @family database-access-functions
+#' @family database-build-functions
 #' @export
-check_ecotox_version <- function(path = get_ecotox_path(), version, verbose = TRUE) {
-  u <-
-    get_ecotox_url() |>
-    basename() |>
-    stringr::str_extract("(?<=^ecotox_ascii_)(.*?)(?=\\.zip$)") |>
-    as.Date(format = "%m_%d_%Y")
+check_ecotox_version <- function(path = get_ecotox_path(), version, verbose = TRUE, ...) {
   
   available <- check_ecotox_availability(path)
   if (!available) {
     if (verbose) {
       message(crayon::red(
-        "No databased present at the specified path"
+        "No database present at the specified path"
       ))
     }
     return(invisible(FALSE))
   }
+  
+  u <-
+    get_ecotox_url(...) |>
+    basename() |>
+    stringr::str_extract("(?<=^ecotox_ascii_)(.*?)(?=\\.zip$)") |>
+    as.Date(format = "%m_%d_%Y")
+  
   f <-
     get_ecotox_sqlite_file(path, version)  |>
     basename() |>

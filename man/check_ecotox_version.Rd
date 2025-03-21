@@ -4,7 +4,7 @@
 \alias{check_ecotox_version}
 \title{Check if the locally build database is up to date}
 \usage{
-check_ecotox_version(path = get_ecotox_path(), version, verbose = TRUE)
+check_ecotox_version(path = get_ecotox_path(), version, verbose = TRUE, ...)
 }
 \arguments{
 \item{path}{When you have a copy of the database somewhere other than the default
@@ -16,21 +16,41 @@ underscores ("\%m_\%d_\%Y"). When missing, the most recent available copy is sel
 
 \item{verbose}{A \code{logical} value. If true messages are shown on the console reporting
 on the check.}
+
+\item{...}{Arguments passed to \code{get_ecotox_url()}}
 }
 \value{
 Returns a \code{logical} value invisibly indicating whether the locally build
 is up to date with the latest release by the EPA.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}} Checks the version of the database available on-line
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}} Checks the version of the database available online
 from the EPA against the specified version (latest by default) of the database build
 locally. Returns \code{TRUE} when they are the same.
 }
 \examples{
-\dontrun{
-check_ecotox_version()
+if (check_ecotox_availability()) {
+  check_ecotox_version()
 }
+}
+\seealso{
+Other database-access-functions: 
+\code{\link{check_ecotox_availability}()},
+\code{\link{check_ecotox_build}()},
+\code{\link{cite_ecotox}()},
+\code{\link{dbConnectEcotox}()},
+\code{\link{get_ecotox_info}()},
+\code{\link{get_ecotox_sqlite_file}()},
+\code{\link{list_ecotox_fields}()}
+
+Other database-build-functions: 
+\code{\link{build_ecotox_sqlite}()},
+\code{\link{check_ecotox_build}()},
+\code{\link{download_ecotox_data}()},
+\code{\link{get_ecotox_url}()}
 }
 \author{
 Pepijn de Vries
 }
+\concept{database-access-functions}
+\concept{database-build-functions}

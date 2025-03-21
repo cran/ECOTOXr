@@ -26,11 +26,22 @@ from the log-file that is (optionally) stored with the local database when calli
 or \code{\link[=build_ecotox_sqlite]{build_ecotox_sqlite()}}.
 }
 \examples{
-\dontrun{
-## Show info on the current database (only works when one is downloaded and build):
-get_ecotox_info()
+if (check_ecotox_availability()) {
+  ## Show info on the current database (only works when one is downloaded and build):
+  get_ecotox_info()
 }
+}
+\seealso{
+Other database-access-functions: 
+\code{\link{check_ecotox_availability}()},
+\code{\link{check_ecotox_build}()},
+\code{\link{check_ecotox_version}()},
+\code{\link{cite_ecotox}()},
+\code{\link{dbConnectEcotox}()},
+\code{\link{get_ecotox_sqlite_file}()},
+\code{\link{list_ecotox_fields}()}
 }
 \author{
 Pepijn de Vries
 }
+\concept{database-access-functions}

@@ -75,22 +75,22 @@ Results are unpolished and `as is' returned by EPA's web service.
 and meta-information.
 }
 \details{
-The \href{https://comptox.epa.gov/dashboard}{CompTox Chemicals Dashboard} is a freely accessible on-line U.S. EPA database.
+The \href{https://comptox.epa.gov/dashboard}{CompTox Chemicals Dashboard} is a freely accessible online U.S. EPA database.
 It contains information on physico-chemical properties, environmental fate and transport, exposure, usage, \emph{in vivo} toxicity,
 and \emph{in vitro} bioassay of a wide range of substances.
 
-The function described here to search and retrieve records from the on-line database is experimental. This is because this feature is
-not formally supported by the EPA, and it may break in future incarnations of the on-line database. The function forms an interface between
+The function described here to search and retrieve records from the online database is experimental. This is because this feature is
+not formally supported by the EPA, and it may break in future incarnations of the online database. The function forms an interface between
 R and the \href{https://comptox.epa.gov/dashboard}{CompTox} website and is therefore limited by the restrictions documented there.
 }
 \examples{
-\dontrun{
-## search for substance name 'benzene' and CAS registration number 108-88-3
-## on https://comptox.epa.gov/dashboard:
-comptox_results <- websearch_comptox(c("benzene", "108-88-3"))
+if (interactive()){
+  ## search for substance name 'benzene' and CAS registration number 108-88-3
+  ## on https://comptox.epa.gov/dashboard:
+  comptox_results <- websearch_comptox(c("benzene", "108-88-3"))
 
-## search for substances with monoisotopic mass of 100+/-5:
-comptox_results2 <- websearch_comptox("100", inputType = "MASS", massError = 5)
+  ## search for substances with monoisotopic mass of 100+/-5:
+  comptox_results2 <- websearch_comptox("100", inputType = "MASS", massError = 5)
 }
 }
 \references{
@@ -101,13 +101,6 @@ Williams, A.J., Grulke, C.M., Edwards, J., McEachran, A.D., Mansouri, K, Baker, 
 Wambaugh, J.F., Judson, R.S. & Richard, A.M. (2017), The CompTox Chemistry Dashboard: a community data resource
 for environmental chemistry. \emph{J Cheminform}, 9(61) \doi{10.1186/s13321-017-0247-6}
 }
-\seealso{
-Other search-functions: 
-\code{\link{search_ecotox}()},
-\code{\link{websearch_ecotox}()}
-}
 \author{
 Pepijn de Vries
 }
-\concept{onlinesearch-functions}
-\concept{search-functions}

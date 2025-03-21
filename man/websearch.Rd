@@ -3,7 +3,7 @@
 \name{websearch_ecotox}
 \alias{websearch_ecotox}
 \alias{list_ecotox_web_fields}
-\title{Search and retrieve toxicity records from the on-line database}
+\title{Search and retrieve toxicity records from the online database}
 \usage{
 websearch_ecotox(
   fields = list_ecotox_web_fields(),
@@ -15,7 +15,7 @@ websearch_ecotox(
 list_ecotox_web_fields(...)
 }
 \arguments{
-\item{fields}{A named \code{list} of \code{character}s, used to build a search for for the on-line search query of
+\item{fields}{A named \code{list} of \code{character}s, used to build a search for for the online search query of
 \url{https://cfpub.epa.gov/ecotox/search.cfm}.
 Use \code{\link[=list_ecotox_web_fields]{list_ecotox_web_fields()}} to construct a valid list.}
 
@@ -37,12 +37,12 @@ Returns named \code{list} of \link[dplyr:reexports]{dplyr::tibble}s with search 
 \code{\link[=websearch_ecotox]{websearch_ecotox()}}.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Functions to search and retrieve records from the on-line database at
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Functions to search and retrieve records from the online database at
 \url{https://cfpub.epa.gov/ecotox/search.cfm}.
 }
 \details{
-The functions described here to search and retrieve records from the on-line database are experimental. This is because this feature is
-not formally supported by the EPA, and it may break in future iterations of the on-line database. The functions form an interface between
+The functions described here to search and retrieve records from the online database are experimental. This is because this feature is
+not formally supported by the EPA, and it may break in future iterations of the online database. The functions form an interface between
 R and the ECOTOX website and is therefore limited by its restrictions as described in the package documentation: \link{ECOTOXr}. The
 functions should therefore be used with caution.
 }
@@ -51,23 +51,26 @@ functions should therefore be used with caution.
 This to avoid overloading the server and getting your IP address banned from the server.
 }
 \examples{
-\dontrun{
-search_fields <-
-  list_ecotox_web_fields(
-    txAdvancedSpecEntries     = "daphnia magna",
-    RBSPECSEARCHTYPE          = "EXACT",
-    txAdvancedChemicalEntries = "benzene",
-    RBCHEMSEARCHTYPE          = "EXACT")
-search_results <- websearch_ecotox(search_fields)
+if (interactive()) {
+  search_fields <-
+    list_ecotox_web_fields(
+      txAdvancedSpecEntries     = "daphnia magna",
+      RBSPECSEARCHTYPE          = "EXACT",
+      txAdvancedChemicalEntries = "benzene",
+      RBCHEMSEARCHTYPE          = "EXACT")
+  search_results <- websearch_ecotox(search_fields)
 }
 }
 \seealso{
+Other online-functions: 
+\code{\link{download_ecotox_data}()},
+\code{\link{get_ecotox_url}()}
+
 Other search-functions: 
-\code{\link{search_ecotox}()},
-\code{\link{websearch_comptox}()}
+\code{\link{search_ecotox}()}
 }
 \author{
 Pepijn de Vries
 }
-\concept{online-search-functions}
+\concept{online-functions}
 \concept{search-functions}

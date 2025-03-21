@@ -85,6 +85,8 @@ query is returned. This query is built based on the provided search terms and op
 In case of \code{search_ecotox} a \code{data.frame} is returned based on the search query built with
 \code{search_query_ecotox}. The \code{data.frame} is unmodified as returned by SQLite, meaning that all
 fields are returned as \code{character}s (even where the field types are 'date' or 'numeric').
+Therefore, retrieved search results may need some post-processing with \code{process_ecotox_numerics()}
+\code{as_numeric_ecotox()}
 
 The results are tagged with: a time stamp; the package version used; and the
 file path of the SQLite database used in the search (when applicable). These tags are added as attributes
@@ -114,7 +116,6 @@ CRAN and document the package and database version that are used to generate spe
 \code{\link[=cite_ecotox]{cite_ecotox()}}).
 }
 \examples{
-\dontrun{
 ## let's find the ids of all ecotox tests on species
 ## where Latin names contain either of 2 specific genus names and
 ## where they were exposed to the chemical benzene
@@ -138,10 +139,8 @@ if (check_ecotox_availability()) {
   print("Sorry, you need to use 'download_ecotox_data()' first in order for this to work.")
 }
 }
-}
 \seealso{
 Other search-functions: 
-\code{\link{websearch_comptox}()},
 \code{\link{websearch_ecotox}()}
 }
 \author{

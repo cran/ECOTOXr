@@ -34,11 +34,22 @@ specified by you using \code{options(ECOTOXr_path = "mypath")}.
 \examples{
 get_ecotox_path()
 
-\dontrun{
-## This will only work if a local database exists:
-get_ecotox_sqlite_file()
+if (check_ecotox_availability()) {
+  ## This will only work if a local database exists:
+  get_ecotox_sqlite_file()
 }
+}
+\seealso{
+Other database-access-functions: 
+\code{\link{check_ecotox_availability}()},
+\code{\link{check_ecotox_build}()},
+\code{\link{check_ecotox_version}()},
+\code{\link{cite_ecotox}()},
+\code{\link{dbConnectEcotox}()},
+\code{\link{get_ecotox_info}()},
+\code{\link{list_ecotox_fields}()}
 }
 \author{
 Pepijn de Vries
 }
+\concept{database-access-functions}
