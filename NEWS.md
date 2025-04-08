@@ -1,3 +1,9 @@
+ECOTOXr v1.2.1
+-------------
+
+  * Improved test coverage
+  * Fixed error in units conversion
+
 ECOTOXr v1.2.0
 -------------
 
@@ -9,7 +15,7 @@ ECOTOXr v1.2.0
   * Fixed check upon attach
   * Correction in database specifications
   * Improved test coverage
-  * Testet against 2025-03-13 release of ECOTOX
+  * Tested against 2025-03-13 release of ECOTOX
 
 ECOTOXr v1.1.1
 -------------

@@ -420,36 +420,38 @@ Although, the first has additional information joined automatically.</p>
 <h2>Searching the online database</h2>
 <p>You can also use the package to <a href="https://cfpub.epa.gov/ecotox/search.cfm">search using the online
 webform</a>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>search_fields <span class="ot">&lt;-</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">list_ecotox_web_fields</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">txAdvancedSpecEntries     =</span> <span class="st">&quot;daphnia magna&quot;</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">RBSPECSEARCHTYPE          =</span> <span class="st">&quot;EXACT&quot;</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">txAdvancedChemicalEntries =</span> <span class="st">&quot;benzene&quot;</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">RBCHEMSEARCHTYPE          =</span> <span class="st">&quot;EXACT&quot;</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>search_results <span class="ot">&lt;-</span> <span class="fu">websearch_ecotox</span>(search_fields, <span class="at">verify_ssl =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>search_results<span class="sc">$</span><span class="st">`</span><span class="at">Aquatic-Export</span><span class="st">`</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; # A tibble: 56 × 87</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;    `CAS Number` `Chemical Name` `Chemical Grade` `Chemical Analysis`</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;           &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;            &lt;chr&gt;              </span></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;  1        71432 Benzene         &lt;NA&gt;             &lt;NA&gt;               </span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;  2        71432 Benzene         &lt;NA&gt;             &lt;NA&gt;               </span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  3        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;  4        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;  5        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;  6        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;  7        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;  8        71432 Benzene         &lt;NA&gt;             Measured           </span></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;  9        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 10        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; # ℹ 46 more rows</span></span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; # ℹ 83 more variables: `Chemical Purity Mean Op` &lt;chr&gt;,</span></span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Mean(%)` &lt;dbl&gt;, `Chemical Purity Min Op` &lt;lgl&gt;,</span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Min(%)` &lt;lgl&gt;, `Chemical Purity Max Op` &lt;lgl&gt;,</span></span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Max(%)` &lt;lgl&gt;, `Species Scientific Name` &lt;chr&gt;,</span></span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt; #   `Species Common Name` &lt;chr&gt;, `Species Group` &lt;chr&gt;,</span></span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt; #   `Organism Lifestage` &lt;chr&gt;, `Organism Age Mean Op` &lt;chr&gt;, …</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">tryCatch</span>({</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  search_fields <span class="ot">&lt;-</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="fu">list_ecotox_web_fields</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>      <span class="at">txAdvancedSpecEntries     =</span> <span class="st">&quot;daphnia magna&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>      <span class="at">RBSPECSEARCHTYPE          =</span> <span class="st">&quot;EXACT&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>      <span class="at">txAdvancedChemicalEntries =</span> <span class="st">&quot;benzene&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>      <span class="at">RBCHEMSEARCHTYPE          =</span> <span class="st">&quot;EXACT&quot;</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  search_results <span class="ot">&lt;-</span> <span class="fu">websearch_ecotox</span>(search_fields, <span class="at">verify_ssl =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  search_results<span class="sc">$</span><span class="st">`</span><span class="at">Aquatic-Export</span><span class="st">`</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>})</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; # A tibble: 56 × 87</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;    `CAS Number` `Chemical Name` `Chemical Grade` `Chemical Analysis`</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;           &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;            &lt;chr&gt;              </span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  1        71432 Benzene         &lt;NA&gt;             &lt;NA&gt;               </span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;  2        71432 Benzene         &lt;NA&gt;             &lt;NA&gt;               </span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;  3        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;  4        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;  5        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;  6        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;  7        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;  8        71432 Benzene         &lt;NA&gt;             Measured           </span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;  9        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; 10        71432 Benzene         &lt;NA&gt;             Unmeasured         </span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt; # ℹ 46 more rows</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; # ℹ 83 more variables: `Chemical Purity Mean Op` &lt;chr&gt;,</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Mean(%)` &lt;dbl&gt;, `Chemical Purity Min Op` &lt;lgl&gt;,</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Min(%)` &lt;lgl&gt;, `Chemical Purity Max Op` &lt;lgl&gt;,</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt; #   `Chemical Purity Max(%)` &lt;lgl&gt;, `Species Scientific Name` &lt;chr&gt;,</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt; #   `Species Common Name` &lt;chr&gt;, `Species Group` &lt;chr&gt;,</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt; #   `Organism Lifestage` &lt;chr&gt;, `Organism Age Mean Op` &lt;chr&gt;, …</span></span></code></pre></div>
 <p>When aiming for reproducibility it is better to query the local
 database, as the online tool may not be able to search and export all
 fields; data may change and is beyond your control; and it is processed

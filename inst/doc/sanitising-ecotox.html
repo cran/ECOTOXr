@@ -450,7 +450,9 @@ indicating for instance ‘active ingredient’, the medium it refers to
 <li>Ambiguous units like percentages and ‘parts per …’ are converted to
 more explicit units where possible. This is only possible when it is
 recorded if the units indicate if they are w/w, w/v, v/v or v/w. If this
-conversion is not possible, the unit is kept as is.</li>
+annotation is missing from ‘parts per …’ units, it is assumed to be
+weight over volume. The same is true for percentages, but only if the
+unit type is <code>concentration</code>.</li>
 <li>Units that are not known or interpreted incorrectly by the
 <code>units</code> package are converted such that they are handled
 correctly. For instance ‘C’ in the ECOTOX database frequently stands for
@@ -644,7 +646,7 @@ specific unit.</p>
 <span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;   &lt;mixed_units&gt; &lt;chr&gt;                   [ug/L]</span></span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 1      1 [mg/L] mg/L                      1000</span></span>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 2     2 [mol/L] M                           NA</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 3  5e-04 [hg/L] % w/v                    50000</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 3  5e-04 [g/dL] % w/v                     5000</span></span>
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 4     0.2 [g/L] ppt w/v                 200000</span></span></code></pre></div>
 <p>Note that in the example above not all units can be converted to the
 target unit <code>&quot;ug/L&quot;</code>. This is because concentrations in
